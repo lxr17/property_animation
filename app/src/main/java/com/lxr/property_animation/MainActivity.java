@@ -70,13 +70,22 @@ public class MainActivity extends AppCompatActivity {
                             });
                         }
 
-                        disappearAnimator.start();
+                        // 如果此时出现动画已开始，则取消
+                        if (appearAnimator != null && appearAnimator.isStarted()) {
+                            appearAnimator.cancel();
+                        }
+
+                        // 如果消失动画还未开始执行并且iv的位置在原始位置，则执行
+                        if (!disappearAnimator.isStarted() && originX == iv.getX()) {
+                            disappearAnimator.start();
+                        }
                         break;
                     case RecyclerView.SCROLL_STATE_IDLE:// 停止滚动
                         // 出现动画的基本属性（从屏幕右侧一半到原始位置）
                         if (appearAnimator == null) {
                             appearAnimator = ValueAnimator.ofFloat((float) (screenWidth - ivWidth / 2.0), originX);
                             appearAnimator.setDuration(400);// 动画持续时间
+                            appearAnimator.setStartDelay(700);// 延迟时间
                             appearAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                 @Override
                                 public void onAnimationUpdate(ValueAnimator animation) {// Value更新事件
@@ -86,7 +95,10 @@ public class MainActivity extends AppCompatActivity {
                             });
                         }
 
-                        appearAnimator.start();
+                        // 如果出现动画还未开始执行，则执行
+                        if (!appearAnimator.isStarted()) {
+                            appearAnimator.start();
+                        }
                         break;
                 }
             }
