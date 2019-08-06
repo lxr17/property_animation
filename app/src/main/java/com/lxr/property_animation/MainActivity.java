@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
@@ -19,11 +18,9 @@ public class MainActivity extends AppCompatActivity {
     private ImageView iv;
 
     private ValueAnimator disappearAnimator;// 消失动画
-
+    private ValueAnimator appearAnimator;// 出现动画
     private float originX = 0;// iv的原始x坐标
-
     private float ivWidth = 0;// iv的宽度
-
     private float screenWidth;// 屏幕宽度
 
     @Override
@@ -76,7 +73,20 @@ public class MainActivity extends AppCompatActivity {
                         disappearAnimator.start();
                         break;
                     case RecyclerView.SCROLL_STATE_IDLE:// 停止滚动
-                        iv.setVisibility(View.VISIBLE);
+                        // 出现动画的基本属性（从屏幕右侧一半到原始位置）
+                        if (appearAnimator == null) {
+                            appearAnimator = ValueAnimator.ofFloat((float) (screenWidth - ivWidth / 2.0), originX);
+                            appearAnimator.setDuration(400);// 动画持续时间
+                            appearAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                                @Override
+                                public void onAnimationUpdate(ValueAnimator animation) {// Value更新事件
+                                    float curValue = (float) animation.getAnimatedValue();
+                                    iv.setX(curValue);
+                                }
+                            });
+                        }
+
+                        appearAnimator.start();
                         break;
                 }
             }
